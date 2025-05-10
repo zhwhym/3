@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时政要闻 | 简讯新闻</title>
+    <style>
+        /* 基础样式 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        /* 白色导航栏 - 时政专版 */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #4285f4;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .logo span {
+            color: #4285f4;
+        }
+        
+        /* 时政导航菜单 */
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav li {
+            margin-left: 2rem;
+        }
+        
+        nav a {
+            color: #555;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        nav a:hover {
+            color: #4285f4;
+        }
+        
+        nav a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #4285f4;
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover:after {
+            width: 100%;
+        }
+        
+        /* 当前页面高亮 */
+        nav a[href="#politics"] {
+            color: #4285f4;
+            font-weight: 600;
+        }
+        
+        nav a[href="#politics"]:after {
+            width: 100%;
+        }
+        
+        /* 主要内容区 */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: normal;
+            color: #222;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        /* 时政新闻卡片 */
+        .political-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid #4285f4;
+        }
+        
+        .political-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .political-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .political-content {
+            padding: 1.5rem;
+        }
+        
+        .political-tag {
+            display: inline-block;
+            background: #f1f3f4;
+            color: #4285f4;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .political-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            color: #222;
+            line-height: 1.4;
+        }
+        
+        .political-summary {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+        
+        .political-meta {
+            display: flex;
+            align-items: center;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 1.5rem;
+        }
+        
+        .political-date {
+            margin-right: 1rem;
+            color: #ea4335;
+            font-weight: 500;
+        }
+        
+        .political-source {
+            font-style: italic;
+        }
+        
+        .importance {
+            display: inline-flex;
+            align-items: center;
+            margin-left: auto;
+        }
+        
+        .importance-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .high {
+            background-color: #ea4335;
+        }
+        
+        .medium {
+            background-color: #fbbc05;
+        }
+        
+        .low {
+            background-color: #34a853;
+        }
+        
+        /* 新闻网格布局 */
+        .political-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        }
+        
+        .sidebar-title {
+            font-size: 1.2rem;
+            color: #222;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #4285f4;
+            display: inline-block;
+        }
+        
+        .policy-list {
+            list-style: none;
+        }
+        
+        .policy-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .policy-list a {
+            color: #555;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: block;
+        }
+        
+        .policy-list a:hover {
+            color: #4285f4;
+        }
+        
+        .policy-date {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.3rem;
+        }
+        
+        /* 页脚 */
+        footer {
+            background: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 1.5rem;
+            padding: 0 1rem;
+        }
+        
+        .footer-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section a:hover {
+            color: #4285f4;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+            }
+            
+            nav li {
+                margin-left: 1rem;
+                margin-right: 1rem;
+            }
+            
+            .political-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-section {
+                flex: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 白色导航栏 -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">中哈<span>文化云脉</span></a>
+            <nav>
+                <ul>
+                    <li><a href="https://zhwhym.github.io/1//">首页</a></li>
+                    <li><a href="https://yuteng0412.github.io/shouye2/">走近哈萨克斯坦</a></li>
+                    <li><a href="https://yuteng0412.github.io/shouye3/">相关资料</a></li>
+                    <li><a href="https://yuteng0412.github.io/shouye4/">公众号</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="container">
+        <div class="page-header">
+            <h1 class="page-title">相关资料</h1>
+            <p class="page-subtitle">了解相关资料，明晰中哈文化</p>
+        </div>
+        
+        <!-- 头条新闻 -->
+        <article class="political-card">
+            <div class="political-content">
+                <span class="political-tag">一带一路。</span>
+                <h2 class="political-title">“一带一路”背景下哈萨克斯坦，在华留学生的跨文化适应研究</h2>
+                <p class="political-summary">在“一带一路”倡议推动下，中国与哈萨克斯坦的教育合作日益深化，吸引大量哈萨克斯坦留学生来华学习。一项针对在华哈萨克斯坦留学生跨文化适应的研究显示，尽管中国普通话的普及性、适宜气候、饮食兼容性及中国人民的热情性格等因素有助于其文化适应，但语言障碍（60.92%）、文化内涵差异（62.07%）及风俗礼仪隔阂仍是主要挑战。调查显示，74.71%的留学生能够较好适应中国文化，但25.29%仍存在适应困难，需通过汉语学习、文化体验活动及学校组织的节日互动（如春节、中秋节）促进文化融合。研究建议，留学生需提升对自身文化及中国文化的认同感，学校应优化教学方法并加强文化浸润式教育，教师则需因材施教以降低语言学习门槛。该研究不仅揭示了中哈文化交流中的关键问题，也为“一带一路”背景下国际学生管理及跨文化教育合作提供了实践路径，强调通过文化融合与双向适应机制深化两国人文交流与教育互信...</p>
+                <div class="political-meta">
+                    <span class="importance">
+                        <span class="importance-dot high"></span>
+                    
+                        <li><a href=" https://pan.baidu.com/s/1egmvTd5orW0j8oYzbZWaLw?pwd=2ew8">完整资料</a></li>
+                    </span>
+                </div>
+            </div>
+        </article>
+        
+        <!-- 新闻网格 -->
+        <div class="political-grid">
+            <article class="political-card">
+       
+                <div class="political-content">
+                    <span class="political-tag">网络</span>
+                    <h2 class="political-title">我国对“一带一路”国家网络传播的现状与对策——以中亚五国为例》</h2>
+                    <p class="political-summary">《我国对“一带一路”国家网络传播的现状与对策——以中亚五国为例》（贺潇潇，2015）系统分析了中国在“一带一路”倡议下对哈萨克斯坦、乌兹别克斯坦、吉尔吉斯斯坦、土库曼斯坦和塔吉克斯坦的网络传播实践与挑战。研究指出，中亚五国网络媒体发展水平差异显著：吉尔吉斯斯坦网络媒体专业化程度较高，成为独立信息源；乌兹别克斯坦互联网用户以高学历青年为主；哈萨克斯坦网站建设更新缓慢且依赖俄罗斯资源；土库曼斯坦互联网普及率极低且受严格监管；塔吉克斯坦则因国际项目支持具备成为欧亚信息枢纽的潜力...</p>
+                    <div class="political-meta">
+                        <span class="importance">
+                            <span class="importance-dot high"></span>
+                           
+                            <li><a href="https://pan.baidu.com/s/1vcYmJw6wOWz2cX7kigCxcA?pwd=k9m1">完整资料</a></li>
+                        </span>
+                    </div>
+                </div>
+            </article>
+            
+            <article class="political-card">
+          
+                <div class="political-content">
+                    <span class="political-tag">新媒体</span>
+                    <h2 class="political-title">短视频在中国周边文化传播渠道的效用</h2>
+                    <p class="political-summary">《短视频作为近年来迅速崛起的新兴媒介形态，凭借其传播快、流量小、内容精炼等特点，已成为全球用户获取信息和娱乐的重要方式。截至2020年6月，中国短视频用户规模已达8.18亿，平台内容日益丰富，技术迭代推动算法精准推荐，显著提升了用户黏性（如每日使用时长超60分钟的用户占比达20%）。以抖音（Tik-Tok）为代表的短视频平台通过本土化运营、明星合作及节日挑战赛等形式，成功拓展海外市场，在东南亚、东亚等地区占据下载量榜首，并通过舞蹈、搞笑、传统文化等贴近本地用户喜好的内容，成为文化传播的重要载体...</p>
+                    <div class="political-meta">
+                        <span class="importance">
+                            <span class="importance-dot medium"></span>
+                           
+                            <li><a href="https://pan.baidu.com/s/1j1Sl8evLxGpUjb_HZ2RLIQ?pwd=cpg5">完整资料</a></li>
+                        </span>
+                    </div>
+                </div>
+            </article>
+            
+            <article class="political-card">
+               
+                <div class="political-content">
+                    <span class="political-tag">历史文化</span>
+                    <h2 class="political-title">哈萨克斯坦民族与文化史</h2>
+                    <p class="political-summary">《哈萨克斯坦民族与文化史》由哈萨克斯坦学者马萨诺夫、阿贝尔霍任、耶罗费耶娃、阿列克先科和巴拉托娃于2018年合著，是一部系统梳理哈萨克斯坦从古代至十月革命前社会历史与民族文化演变的学术著作。全书分为上下两篇，上篇聚焦哈萨克斯坦传统社会的历史脉络，涵盖自然地理、古代居民、哈萨克民族的族源与历史、传统经济与社会文化，以及哈萨克汗国的政治制度与政权演进（1731-1865年）；下篇则分析18至19世纪哥萨克移民与农民迁移对社会的影响，揭示多元文化与民族成分的形成过程。本书以历史学、民族学、社会学等多学科视角，结合丰富史料与田野调查，深入探讨哈萨克斯坦的游牧经济模式...</p>
+                    <div class="political-meta">
+                        <span class="importance">
+                            <span class="importance-dot medium"></span>
+                          
+                            <li><a href="https://pan.baidu.com/s/1WSnGyQ0AdUaOGgnuQe1MJw?pwd=aw6n ">完整资料</a></li>
+                        </span>
+
+                    </div>
+                </div>
+            </article>
+        </div>
+        
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <h3 class="sidebar-title">更多资料</h3>
+            <ul class="policy-list">
+                <li>
+                    <a href="https://pan.baidu.com/s/1xY8Ty2btkhFj2xwW8Y4geA?pwd=bid8">大学生网络文化阵地及边界建构分析</a>
+                    <div class="policy-date">李小伟</div>
+                </li>
+                <li>
+                    <a href="https://pan.baidu.com/s/1wPj-vjBoVKAitciVPikBRQ?pwd=g58i ">对外投资合作国别（地区）指南：哈萨克斯坦</a>
+                    <div class="policy-date"></div>
+                </li>
+                <li>
+                    <a href=" https://pan.baidu.com/s/1CMwZlV_Dr37SaFc9YKu4XA?pwd=w8ae">哈萨克斯坦媒体生态及其特征</a>
+                    <div class="policy-date">胡邦胜</div>
+                </li>
+                <li>
+                    <a href="https://pan.baidu.com/s/1_ug9E8J8LzW8fSCmsAheEg?pwd=ce8c">哈萨克斯坦文化和社会习俗</a>
+                    <div class="policy-date"> 孙星云  </div>
+                </li>
+                <li>
+                    <a href="https://pan.baidu.com/s/1SnTyDiEJraIcScm6PdYYyw?pwd=6k31">哈萨克斯坦主流媒体涉华报道</a>
+                    <div class="policy-date">  刘奇 </div>
+                </li>
+                <li>
+                    <a href="https://pan.baidu.com/s/167xfDFRv8KLsMe37huaQ9w?pwd=3fpv ">基于微信平台的中高级哈萨克斯坦留学生汉语自主学习研究</a>
+                    <div class="policy-date">  苏禾 </div>
+                </li>
+                <li>
+                    <a href=" https://pan.baidu.com/s/117sQtei37lSFwdEwQCIA6w?pwd=h4tu ">美国对中亚的网络外交研究</a>
+                    <div class="policy-date"> 廖成梅  </div>
+                </li>
+                <li>
+                    <a href=" https://pan.baidu.com/s/1OKg0hRyRP-c69KCwHoaKDw?pwd=g4en ">批评性话语视阈下中亚主流网络媒体中的中国国家形象--以中国在上海合作组织成员国的角色为例</a>
+                    <div class="policy-date">  郗佼 邓秀琳 </div>
+                </li>
+                <li>
+                    <a href=" https://pan.baidu.com/s/1lP_O8yWbZNpizV8gtocEbw?pwd=uh5n ">全媒体时代网络文化传播策略</a>
+                    <div class="policy-date">  袁菲</div>
+                </li>
+                <li>
+                    <a href="https://pan.baidu.com/s/1Tx_MiCy_nhrEOlDjkyb7pA?pwd=irux">一带一路视域下中哈两国友好交往特点分析</a>
+                    <div class="policy-date"> 马晓云  </div>
+                </li>
+                <li>
+                    <a href=" https://pan.baidu.com/s/1IUJfzP2Bw-hmuQYKiVnYVA?pwd=ceh5 ">中国与哈萨克斯坦文化合作：历程与意义</a>
+                    <div class="policy-date">   徐向梅</div>
+                </li>
+                <li>
+                    <a href="https://pan.baidu.com/s/1BkHJtohcBQR1DGKine6cQQ?pwd=agj8">中哈网络流行语对比研究</a>
+                    <div class="policy-date"> YESSILBAYEVA GULNUR  </div>
+                </li>
+                <li>
+                    <a href="https://pan.baidu.com/s/194_edpPPwZOBcEabkPa6dg?pwd=12p9 ">中亚五国 新丝路的重要支点 </a>
+                    <div class="policy-date"> 孔庆楠 </div>
+                </li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3>关于我们</h3>
+            <ul>
+                <li><a href="#">联系我们</a></li>
+                <li><a href="#">加入团队</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            
+            
+        </div>
+        <div class="footer-section">
+            <ul>
+              
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>关注我们</h3>
+            <ul>
+                <li><a href="">微信公众号：中哈文化研习社</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="copyright">
+        <p>&copy;2025 中哈网络文化研习社</p>
+    </div>
+</footer>
+</body>
+</html>
